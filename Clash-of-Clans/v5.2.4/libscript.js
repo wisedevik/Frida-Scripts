@@ -33,7 +33,6 @@ var stage_address;
 var dptr;
 var menuType = 0;
 var chatLeave = 0;
-
 function init()
 {
     var connect = Interceptor.attach(getaddrinfoPtr, {
@@ -45,7 +44,7 @@ function init()
             log("New Address: " + this.newAdress.readUtf8String());
         }
     });
-    
+
     var load = Interceptor.attach(GameModeAddResourcesToLoadPtr, {
         onEnter: function(args)
         {
@@ -131,6 +130,7 @@ function init()
                             dptr = malloc(1000);
                             DebugInfo(dptr);
                             StageAddChild(stage_address, dptr);
+                            log("DebugInfo displayed ")
                             executeCmd.detach();
                     }
                     if(chatLeave === 1) {
