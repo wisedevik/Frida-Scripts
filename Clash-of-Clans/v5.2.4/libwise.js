@@ -110,6 +110,13 @@ const Libg = {
                 return new NativeFunction(Libg.DebugInfo.addr.ctor, "void", ["pointer"])(ptr);
             }
         }
+
+        this.LogicDefines = {
+            addr: {
+                isPlatformAndroid: Libg.offset("_ZN12LogicDefines17isPlatformAndroidEv"),
+                isPlatformIOS: Libg.offset("_ZN12LogicDefines13isPlatformIOSEv")
+            }
+        }
     },
     offset(value) {
 		return Module.findExportByName("libg.so", value);
@@ -219,13 +226,35 @@ const ChatManager = {
     }
 }
 
+/* const ChangePaltform = {
+    init() {
+        var isAndroidFunction = new NativeFunction(Libg.LogicDefines.addr.isPlatformAndroid, "int", []);
+        var isIOSFunction = new NativeFunction(Libg.LogicDefines.addr.isPlatformIOS, "int", []);
+
+        log("Before change - isPlatformAndroid:", isAndroidFunction(), "isPlatformIOS:", isIOSFunction());
+
+        var change = Interceptor.replace(Libg.LogicDefines.addr.isPlatformAndroid, new NativeCallback(function() {
+            return 0;
+        }, "int", []));
+
+        var ios = Interceptor.replace(Libg.LogicDefines.addr.isPlatformIOS, new NativeCallback(function() {
+            return 1;
+        }, "int", []));
+
+        var isAndroid = isAndroidFunction();
+        var isIOS = isIOSFunction();
+
+        log("After change - isPlatformAndroid: " + isAndroid + " isPlatformIOS: " + isIOS);
+    }
+} */
+
 const ConnectionManager = {
     init() {
         var connect = Interceptor.attach(Libg.libc.addr.getaddrinfo, {
             onEnter(args) {
                 this.address = args[0].readUtf8String();
                 log("Address: " + this.address);
-                this.newAdress = args[0] = Memory.allocUtf8String("127.0.0.1"); //use your address
+                this.newAdress = args[0] = Memory.allocUtf8String("192.168.0.104"); //use your address
                 log("New Address: " + this.newAdress.readUtf8String());
             }
         })
@@ -235,6 +264,7 @@ const ConnectionManager = {
 rpc.exports.init = function() {
     try {
         Libg.init();
+        //ChangePaltform.init(); - TEST
         LoadGame.init();
         Stage.init();
         GameLoaded.init();
